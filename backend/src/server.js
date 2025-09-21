@@ -16,15 +16,19 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
 
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 // for deployment
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
   app.get("*", (_, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
   });
 }
 
