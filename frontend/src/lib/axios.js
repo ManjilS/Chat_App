@@ -1,0 +1,12 @@
+import axios from "axios";
+
+
+export const axiosInstance = axios.create({
+  baseURL: import.meta.env.MODE === "development" ? "http://localhost:3000/api" : "/api",
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'User-Agent': 'ChatApp/1.0',
+    'Accept': 'application/json',
+  },
+});

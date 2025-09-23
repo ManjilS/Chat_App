@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
@@ -20,6 +21,11 @@ const __dirname = path.dirname(__filename);
 const PORT = ENV.PORT || 3000;
 
 // Middleware
+app.use(cors({
+  origin: ENV.NODE_ENV === "production" ? true : "http://localhost:5173",
+  credentials: true,
+  
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

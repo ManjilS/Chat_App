@@ -1,7 +1,11 @@
 import aj from "../lib/arcject.js";
 import { isSpoofedBot } from "@arcjet/inspect";
+import { ENV } from "../lib/env.js";
 
 export const arcjectProtection = async(req, res, next) => {
+    if (ENV.NODE_ENV !== "production") {
+        return next();
+    }
     try{
         const decision = await aj.protect(req)
         if (decision.isDenied) {
@@ -21,6 +25,7 @@ export const arcjectProtection = async(req, res, next) => {
         next();
     } catch(err) {
         console.log("Arcject Protection error :",err); 
+        next();
 
     }
 }  
