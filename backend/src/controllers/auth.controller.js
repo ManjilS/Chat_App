@@ -8,9 +8,11 @@ import cloudinary from '../lib/cloudinary.js';
 
 export const signup= async(req,res)=>{
     const {fullname,email,password}=req.body;
+    console.log("Received signup data:", {fullname, email, password: password ? "[HIDDEN]" : undefined});
 
     try{
         if(!fullname || !email || !password){
+            console.log("Validation failed - missing fields:", {fullname: !!fullname, email: !!email, password: !!password});
             return res.status(400).json({message:"All fields are required"});
         }
         if(password.length<6){
