@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { useAuthStore } from "./useAuthStore";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import { useAuthStore } from "./useAuthStore";
+//import { getMessagesByUserId, sendMessage } from "../../../backend/src/controllers/message.controller";
 
 export const useChatStore = create((set,get) => ({
     allContacts:[],
@@ -11,7 +12,7 @@ export const useChatStore = create((set,get) => ({
     selectedUser:null,
     isUserLoading:false,
     isMessagesLoading:false,
-    isSoundEnabled:localStorage.getItem("isSoundEnabled") === "true",
+    isSoundEnabled:JSON.parse(localStorage.getItem("isSoundEnabled")) === "true",
 
     toggleSound:()=>{
         localStorage.setItem("isSoundEnabled",!get().isSoundEnabled);
@@ -45,5 +46,42 @@ export const useChatStore = create((set,get) => ({
       set({ isUsersLoading: false });
     }
     },
-    
+
+    getMessagesByUserId:async(userId)=>{
+        set({isMessagesLoading:true});
+        try{
+            const res = await axiosInstance.get(`/messages/${userId}`);
+            set({messages:res.data});
+        }catch(err){
+            toast.error("Error fetching messages:",err);
+        }finally {
+            set({isMessagesLoading:false});
+        }
+    },
+
+    sendMessage:async({messageData})=>{
+        const {selectedUser,messages} = get();
+        const {authUser}=useAuthStore.getState(); 
+        
+        const tempId = `temp -${Date.now()}`;
+
+        const optimisticMessage = {
+            _id:tempId,
+            senderId:authUser._id,
+            receiverId:selectedUser._id,
+            text:messageData.message,
+            createdAt:new Date().toISOString(),
+            isOptimistic:true,
+        };
+
+        set({messages: [...messages, optimisticMessage]});
+        try{
+            const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`,messageData);
+            set({messages:messages.concat(res.data)});
+        }catch(err){
+            
+            toast.error("Error sending message:", err);
+        }
+    }
+
 }));
