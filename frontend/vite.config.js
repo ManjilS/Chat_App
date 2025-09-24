@@ -5,14 +5,15 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
+    target: 'esnext',
+    minify: 'esbuild',
     rollupOptions: {
-      external: [],
-    },
-    commonjsOptions: {
-      transformMixedEsModules: true
+      output: {
+        manualChunks: undefined
+      }
     }
   },
-  optimizeDeps: {
-    include: ['react', 'react-dom']
+  esbuild: {
+    target: 'esnext'
   }
 })
