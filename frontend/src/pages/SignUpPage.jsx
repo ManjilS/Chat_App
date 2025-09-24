@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore'
 import BorderAnimatedContainer from '../components/BorderAnimatedContainer'
 import { MessageCircleIcon, UserIcon, MailIcon, LockIcon, LoaderIcon } from 'lucide-react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
-function Signup() {
-   const [formData, setFormData] = useState({
+function SignUpPage() {
+const [formData, setFormData] = useState({
     fullname: "",
     email: "",
     password: "",
@@ -126,4 +126,6 @@ function Signup() {
   );
 }
 
-export default Signup
+
+
+export default SignUpPage;

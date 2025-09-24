@@ -98,22 +98,40 @@ export const logout= async(_,res)=>{
     res.status(200).json({message:"Logged out successfully"});
 }
 
-export const updateProfile= async(req,res)=>{
-    try{
-        const { profilePic} = req.body;
-        if(!profilePic){
-            return res.status(400).json({message:"Profile picture is required"});
+export const updateProfile = async (req, res) => {
+    try {
+        const { profilePic } = req.body;
+        const userId = req.user?._id;
+
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
         }
-        const userId = req.user._id;
-        const uploadResponse = await cloudinary.uploader.upload(profilePic )
-        const updatedUser= await User.findByIdAndUpdate(
-            userId, 
-            { profilePic: uploadResponse.secure_url }, 
+        if (!profilePic) {
+            return res.status(400).json({ message: "Profile picture is required" });
+        }
+
+        let uploadedUrl;
+        try {
+            const uploadResponse = await cloudinary.uploader.upload(profilePic);
+            uploadedUrl = uploadResponse.secure_url;
+        } catch (err) {
+            console.log("Cloudinary upload error:", err);
+            return res.status(400).json({ message: "Invalid profile picture" });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { profilePic: uploadedUrl },
             { new: true }
         );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         res.status(200).json(updatedUser);
-    }catch(err){
-        console.log("Error in updateProfile controller :",err);
-        res.status(500).json({message:"Internal Server Error"});
+    } catch (err) {
+        console.log("Error in updateProfile controller:", err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};

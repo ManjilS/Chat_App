@@ -1,5 +1,6 @@
 import Message from '../models/Message.js';
 import User from '../models/User.js';
+import cloudinary from '../lib/cloudinary.js';
 
 export const getAllContacts = async (req, res) => {
     try {
@@ -89,8 +90,8 @@ export const getChatPartners = async (req, res) => {
             ...new Set (
                 messages.map((msg) => 
                 msg.senderId.toString() === loggedInUserId.toString() 
-                ? msg.receiverIdtoString() 
-                : msg.senderIdtoString())
+                ? msg.receiverId.toString() 
+                : msg.senderId.toString())
             ),
         ];
         const chatPartners = await User.find({_id: {$in: chatPartnersIds}}).select("-password");
